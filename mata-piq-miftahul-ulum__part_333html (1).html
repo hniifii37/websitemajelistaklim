@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MaTa PIQ Miftahul Ulum — Sistem Manajemen Majelis Ta'lim</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --g50:#f0faf4;--g100:#d4f0e0;--g200:#a8dfc1;--g300:#6cc99a;
+  --g400:#3ab077;--g500:#2a9060;--g600:#1e7048;--g700:#165435;
+  --g800:#0f3a24;--g900:#07200f;
+  --gold:#c9a227;--gold-l:#f5e9c0;--gold-d:#8a6c00;
+  --white:#fff;--gray:#64748b;--light:#f8fffe;
+  --red:#ef4444;--red-l:#fee2e2;--red-d:#b91c1c;
+  --blue:#3b82f6;--blue-l:#dbeafe;--blue-d:#1d4ed8;
+  --shadow:0 4px 20px rgba(15,58,36,0.10);
+  --radius:10px;--radius-lg:14px;
+}
+body{font-family:'Nunito',sans-serif;background:var(--g50);color:var(--g800);min-height:100vh;line-height:1.5}
+
+/* ===== LAYOUT ===== */
+#app{display:flex;height:100vh;overflow:hidden}
+#login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;
+  background:linear-gradient(150deg,var(--g900) 0%,var(--g800) 40%,var(--g600) 100%);padding:16px}
+.hidden{display:none!important}
+
+/* ===== SIDEBAR ===== */
+#sidebar{width:244px;background:linear-gradient(170deg,var(--g900) 0%,var(--g700) 55%,var(--g500) 100%);
+  color:#fff;display:flex;flex-direction:column;flex-shrink:0;transition:width .3s;overflow:hidden;position:relative;z-index:10}
+.sidebar-logo{padding:20px 18px;border-bottom:1px solid rgba(255,255,255,.12);display:flex;align-items:center;gap:12px}
+.logo-emblem{width:42px;height:42px;background:var(--gold);border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 0 0 3px rgba(201,162,39,.3)}
+.logo-name{font-family:'Amiri',serif;font-size:13px;font-weight:700;line-height:1.35;color:#fff}
+.logo-sub{font-size:9.5px;color:rgba(255,255,255,.55);margin-top:2px;line-height:1.4}
+.nav-section{padding:10px 0}
+.nav-label{font-size:9px;font-weight:800;letter-spacing:1.8px;color:rgba(255,255,255,.35);
+  padding:8px 18px 4px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:11px;padding:11px 18px;cursor:pointer;
+  transition:all .2s;border-left:3px solid transparent;font-size:13px;font-weight:600;
+  color:rgba(255,255,255,.75);white-space:nowrap;user-select:none}
+.nav-item:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.15);color:#fff;border-left-color:var(--gold)}
+.nav-icon{font-size:17px;flex-shrink:0;width:20px;text-align:center}
+.nav-badge{background:var(--red);color:#fff;border-radius:10px;font-size:10px;
+  font-weight:800;padding:1px 6px;margin-left:auto}
+.sidebar-user{border-top:1px solid rgba(255,255,255,.12);padding:14px 18px;display:flex;align-items:center;gap:10px}
+.sidebar-user .av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;flex-shrink:0}
+.sidebar-uname{font-size:12px;font-weight:700;color:#fff;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sidebar-urole{font-size:10px;color:rgba(255,255,255,.55);text-transform:capitalize}
+.logout-btn{cursor:pointer;font-size:16px;color:rgba(255,255,255,.6);padding:4px;border-radius:6px;flex-shrink:0}
+.logout-btn:hover{color:#fff;background:rgba(255,255,255,.1)}
+
+/* ===== MAIN ===== */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#topbar{background:#fff;padding:0 24px;height:58px;display:flex;align-items:center;
+  justify-content:space-between;border-bottom:1.5px solid var(--g100);flex-shrink:0;box-shadow:0 2px 8px rgba(15,58,36,.05)}
+.topbar-title{font-family:'Amiri',serif;font-size:18px;font-weight:700;color:var(--g800)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.search-box{position:relative}
+.search-box input{padding:7px 12px 7px 34px;border:1.5px solid var(--g100);border-radius:8px;
+  font-size:12.5px;font-family:'Nunito',sans-serif;outline:none;background:var(--g50);width:180px;transition:.2s}
+.search-box input:focus{border-color:var(--g400);width:210px;background:#fff}
+.search-box::before{content:'🔍';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none}
+.notif-btn{width:36px;height:36px;border-radius:8px;background:var(--g50);border:1.5px solid var(--g100);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;position:relative;transition:.2s}
+.notif-btn:hover{background:var(--g100)}
+.notif-dot{width:9px;height:9px;background:var(--red);border:2px solid #fff;border-radius:50%;
+  position:absolute;top:5px;right:5px}
+.user-chip{display:flex;align-items:center;gap:8px;padding:4px 10px;border-radius:8px;cursor:pointer;
+  border:1.5px solid var(--g100);background:var(--g50);transition:.2s}
+.user-chip:hover{background:var(--g100)}
+.user-chip .av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
+.user-chip-name{font-size:12px;font-weight:700;color:var(--g800)}
+.user-chip-role{font-size:10px;color:var(--gray);text-transform:capitalize}
+
+/* ===== CONTENT ===== */
+#content{flex:1;overflow-y:auto;padding:24px;background:var(--g50)}
+.page{display:none;animation:fadeIn .25s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== CARDS ===== */
+.card{background:#fff;border-radius:var(--radius-lg);border:1.5px solid var(--g100);padding:20px;margin-bottom:18px;box-shadow:var(--shadow)}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.card-title{font-family:'Amiri',serif;font-size:16px;font-weight:700;color:var(--g800)}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px}
+.stat-card{background:#fff;border-radius:var(--radius);padding:18px;border:1.5px solid var(--g100);
+  position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.stat-top{height:4px;position:absolute;top:0;left:0;right:0;border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.stat-num{font-size:28px;font-weight:800;line-height:1;margin-top:4px}
+.stat-lbl{font-size:11.5px;color:var(--gray);margin-top:5px;font-weight:600}
+.stat-ico{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:30px;opacity:.1}
+
+/* ===== BUTTONS ===== */
+.btn{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:700;
+  font-family:'Nunito',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn-primary{background:var(--g500);color:#fff}
+.btn-primary:hover{background:var(--g600);transform:translateY(-1px)}
+.btn-secondary{background:var(--g50);color:var(--g700);border:1.5px solid var(--g200)}
+.btn-secondary:hover{background:var(--g100)}
+.btn-danger{background:var(--red-l);color:var(--red-d);border:1.5px solid #fca5a5}
+.btn-danger:hover{background:#fca5a5}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-gold:hover{background:var(--gold-d)}
+
+/* ===== BADGES ===== */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.bg-green{background:var(--g100);color:var(--g700)}
+.bg-gold{background:var(--gold-l);color:var(--gold-d)}
+.bg-red{background:var(--red-l);color:var(--red-d)}
+.bg-blue{background:var(--blue-l);color:var(--blue-d)}
+.bg-gray{background:#f1f5f9;color:#475569}
+
+/* ===== FORMS ===== */
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:12px;font-weight:800;color:var(--g700);margin-bottom:5px;letter-spacing:.3px}
+.fi,.fs{width:100%;padding:9px 13px;border:1.5px solid var(--g100);border-radius:8px;
+  font-size:13px;font-family:'Nunito',sans-serif;outline:none;transition:.2s;background:#fff;color:var(--g800)}
+.fi:focus,.fs:focus{border-color:var(--g400);box-shadow:0 0 0 3px rgba(42,144,96,.08)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ===== TABLE ===== */
+.tbl-wrap{overflow-x:auto;border-radius:10px;border:1.5px solid var(--g100)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--g700);color:#fff;padding:11px 14px;text-align:left;font-weight:800;font-size:12px}
+th:first-child{border-radius:8px 0 0 0}
+th:last-child{border-radius:0 8px 0 0}
+td{padding:10px 14px;border-bottom:1px solid var(--g50);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fffe}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0}
+.av-row{display:flex;align-items:center;gap:10px}
+
+/* ===== MODAL ===== */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;
+  justify-content:center;z-index:1000;padding:16px;backdrop-filter:blur(2px)}
+.modal{background:#fff;border-radius:18px;padding:28px;width:100%;max-width:540px;
+  max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.25)}
+.modal-title{font-family:'Amiri',serif;font-size:20px;font-weight:700;color:var(--g800);
+  margin-bottom:20px;padding-bottom:14px;border-bottom:1.5px solid var(--g50)}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1.5px solid var(--g50)}
+
+/* ===== PROGRESS ===== */
+.prog-bar{height:9px;background:var(--g100);border-radius:5px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--g400),var(--g600));border-radius:5px;transition:width .5s}
+
+/* ===== ABSENSI CHIPS ===== */
+.att-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:14px}
+.att-chip{background:var(--light);border:1.5px solid var(--g100);border-radius:11px;padding:11px 13px;
+  display:flex;align-items:center;justify-content:space-between;transition:.2s}
+.att-chip:hover{border-color:var(--g300)}
+.att-btns{display:flex;gap:4px}
+.att-btn{padding:4px 9px;border-radius:7px;border:none;cursor:pointer;font-size:11px;font-weight:800;
+  font-family:'Nunito',sans-serif;transition:all .15s;opacity:.55}
+.att-btn.on{opacity:1;transform:scale(1.05)}
+.att-h{background:var(--g100);color:var(--g700)}
+.att-h.on{background:var(--g500);color:#fff}
+.att-i{background:#fef3c7;color:#92400e}
+.att-i.on{background:#f59e0b;color:#fff}
+.att-a{background:var(--red-l);color:var(--red-d)}
+.att-a.on{background:var(--red);color:#fff}
+
+/* ===== STRUKTUR ===== */
+.struktur-wrap{background:linear-gradient(145deg,var(--g900),var(--g700) 60%,var(--g500));border-radius:16px;padding:28px;color:#fff}
+.str-hd{text-align:center;margin-bottom:24px}
+.str-title{font-family:'Amiri',serif;font-size:22px;font-weight:700}
+.str-sub{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px}
+.str-org{font-size:15px;font-weight:700;color:var(--gold);margin-top:6px}
+.str-ketua{background:rgba(201,162,39,.2);border:1px solid rgba(201,162,39,.4);border-radius:14px;padding:18px;
+  text-align:center;margin-bottom:18px}
+.str-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.str-block{background:rgba(255,255,255,.08);border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,.1)}
+.str-role{font-size:10px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px}
+.person-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);
+  border-radius:24px;padding:5px 12px;margin:3px;font-size:12px;font-weight:700}
+.person-pill .av{width:24px;height:24px;font-size:9px;background:var(--gold);color:#fff}
+
+/* ===== BAR CHART ===== */
+.chart-wrap{display:flex;gap:8px;align-items:flex-end;height:130px;padding:4px}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1}
+.bar-pct{font-size:10px;font-weight:800;color:var(--g600)}
+.bar{width:100%;background:linear-gradient(180deg,var(--g400),var(--g700));border-radius:5px 5px 0 0;transition:height .5s}
+.bar-lbl{font-size:10px;color:var(--gray);text-align:center}
+
+/* ===== NOTIFICATIONS ===== */
+.notif-item{display:flex;gap:12px;padding:13px 0;border-bottom:1.5px solid var(--g50)}
+.notif-item:last-child{border-bottom:none}
+.notif-indicator{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.notif-msg{font-size:13px;font-weight:600;color:var(--g800)}
+.notif-time{font-size:11px;color:var(--gray);margin-top:3px}
+
+/* ===== PRESTASI CARDS ===== */
+.pres-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.pres-card{background:#fff;border:1.5px solid var(--g100);border-radius:14px;padding:18px;position:relative;
+  transition:.2s;box-shadow:var(--shadow)}
+.pres-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(15,58,36,.12)}
+.pres-ico{position:absolute;top:14px;right:14px;font-size:26px}
+.pres-val{font-size:26px;font-weight:800;color:var(--gold);line-height:1}
+.pres-name{font-weight:800;color:var(--g800);font-size:14px;margin-top:4px}
+.pres-desc{font-size:12px;color:var(--g600);margin:4px 0}
+.divider{height:1px;background:var(--g50);margin:10px 0}
+
+/* ===== USTADZ CARDS ===== */
+.ust-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.ust-card{background:var(--light);border:1.5px solid var(--g100);border-radius:14px;padding:18px;transition:.2s}
+.ust-card:hover{border-color:var(--g300);background:#fff}
+.ust-spec{font-size:12px;color:var(--g600);background:var(--g50);border-radius:7px;padding:4px 9px;margin:10px 0 6px}
+.ust-telp{font-size:12px;color:var(--gray)}
+
+/* ===== LAPORAN ===== */
+.lap-rate-bar{display:flex;align-items:center;gap:10px}
+.lap-rate-bar .prog-bar{flex:1}
+
+/* ===== LOGIN ===== */
+.login-card{background:#fff;border-radius:22px;padding:38px 34px;width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,.35)}
+.login-emblem{text-align:center;margin-bottom:28px}
+.login-icon{width:78px;height:78px;background:linear-gradient(135deg,var(--g600),var(--g400));
+  border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:34px;
+  box-shadow:0 8px 24px rgba(42,144,96,.4)}
+.login-title{font-family:'Amiri',serif;font-size:22px;font-weight:700;color:var(--g800);line-height:1.3}
+.login-sub{font-size:11.5px;color:var(--gray);margin-top:5px}
+.login-err{background:var(--red-l);color:var(--red-d);border:1px solid #fca5a5;padding:9px 13px;border-radius:8px;font-size:12.5px;margin-bottom:14px}
+.demo-info{margin-top:16px;padding:12px;background:var(--g50);border-radius:9px;font-size:11.5px;color:var(--gray);line-height:1.9}
+.demo-info strong{color:var(--g700)}
+
+/* ===== MISC ===== */
+.sep{height:1.5px;background:var(--g50);margin:16px 0}
+.empty{text-align:center;padding:48px;color:#94a3b8}
+.empty-ico{font-size:44px;margin-bottom:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.flex-row{display:flex;align-items:center;gap:8px}
+.tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:640px){
+  #sidebar{width:58px}
+  .logo-name,.logo-sub,.nav-item span:not(.nav-icon),.nav-label,.sidebar-uname,.sidebar-urole,.logout-btn{display:none}
+  .nav-item{justify-content:center;padding:12px}
+  .frow,.grid2{grid-template-columns:1fr}
+  #content{padding:16px}
+  #topbar{padding:0 14px}
+  .search-box input{width:130px}
+  .search-box input:focus{width:150px}
+}
+@media(max-width:420px){
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .stat-num{font-size:22px}
+  .modal{padding:20px}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="login-page">
+  <div class="login-card">
+    <div class="login-emblem">
+      <div class="login-icon">🕌</div>
+      <div class="login-title">MaTa PIQ<br>Miftahul Ulum</div>
+      <div class="login-sub">Sistem Manajemen Majelis Ta'lim<br><small>Hidayatul Muhajirin — Balikpapan</small></div>
+    </div>
+    <div class="fg">
+      <label class="fl">Masuk Sebagai</label>
+      <select class="fs" id="login-role">
+        <option value="admin">Admin / Pengurus</option>
+        <option value="ustadz">Ustadz / Ustadzah</option>
+        <option value="santri">Santri (Anggota)</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label class="fl">Username</label>
+      <input class="fi" id="login-user" placeholder="Masukkan username" autocomplete="username">
+    </div>
+    <div class="fg">
+      <label class="fl">Password</label>
+      <input class="fi" id="login-pass" type="password" placeholder="Masukkan password" autocomplete="current-password">
+    </div>
+    <div id="login-err" class="login-err hidden"></div>
+    <button class="btn btn-primary" style="width:100%;padding:12px;font-size:14px;justify-content:center" onclick="doLogin()">Masuk →</button>
+    <div class="demo-info">
+      <strong>Demo Login:</strong><br>
+      Admin: <strong>admin</strong> / admin123<br>
+      Ustadz: <strong>habibullah</strong> / pass123<br>
+      Santri: <strong>santri1</strong> / santri123
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="app" class="hidden">
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-emblem">🕌</div>
+      <div>
+        <div class="logo-name">MaTa PIQ<br>Miftahul Ulum</div>
+        <div class="logo-sub">Hidayatul Muhajirin</div>
+      </div>
+    </div>
+    <div style="overflow-y:auto;flex:1">
+      <div class="nav-section">
+        <div class="nav-label">Menu Utama</div>
+        <div class="nav-item active" onclick="goPage('dashboard')" data-page="dashboard">
+          <span class="nav-icon">🏠</span><span>Dashboard</span>
+        </div>
+        <div class="nav-item" onclick="goPage('santri')" data-page="santri" id="nav-santri">
+          <span class="nav-icon">📚</span><span>Data Santri</span>
+        </div>
+        <div class="nav-item" onclick="goPage('ustadz')" data-page="ustadz" id="nav-ustadz">
+          <span class="nav-icon">👨‍🏫</span><span>Ustadz/Ustadzah</span>
+        </div>
+        <div class="nav-item" onclick="goPage('kegiatan')" data-page="kegiatan">
+          <span class="nav-icon">📅</span><span>Agenda Kegiatan</span>
+        </div>
+        <div class="nav-item" onclick="goPage('absensi')" data-page="absensi">
+          <span class="nav-icon">✅</span><span>Absensi</span>
+        </div>
+        <div class="nav-item" onclick="goPage('prestasi')" data-page="prestasi">
+          <span class="nav-icon">🏆</span><span>Prestasi Santri</span>
+        </div>
+        <div class="nav-item" onclick="goPage('laporan')" data-page="laporan" id="nav-laporan">
+          <span class="nav-icon">📊</span><span>Laporan</span>
+        </div>
+        <div class="nav-item" onclick="goPage('struktur')" data-page="struktur">
+          <span class="nav-icon">🕌</span><span>Struktur Pengurus</span>
+        </div>
+        <div class="nav-item" onclick="goPage('notifikasi')" data-page="notifikasi">
+          <span class="nav-icon">🔔</span><span>Notifikasi</span>
+          <span class="nav-badge hidden" id="notif-nav-badge">0</span>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-user">
+      <div class="av" id="sb-av" style="background:var(--g500);color:#fff"></div>
+      <div style="flex:1;overflow:hidden">
+        <div class="sidebar-uname" id="sb-name">—</div>
+        <div class="sidebar-urole" id="sb-role">—</div>
+      </div>
+      <div class="logout-btn" onclick="doLogout()" title="Keluar">🚪</div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+    <!-- TOPBAR -->
+    <div id="topbar">
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div class="topbar-right">
+        <div class="search-box"><input placeholder="Cari..." oninput="globalSearch(this.value)"></div>
+        <div class="notif-btn" onclick="goPage('notifikasi')" title="Notifikasi">
+          🔔<div class="notif-dot hidden" id="notif-dot"></div>
+        </div>
+        <div class="user-chip" onclick="doLogout()" title="Klik untuk logout">
+          <div class="av" id="top-av" style="background:var(--g500);color:#fff"></div>
+          <div>
+            <div class="user-chip-name" id="top-name">—</div>
+            <div class="user-chip-role" id="top-role">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div id="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div id="dash-greeting" style="margin-bottom:20px">
+          <div style="font-family:'Amiri',serif;font-size:21px;font-weight:700;color:var(--g800)"></div>
+          <div style="font-size:12px;color:var(--gray);margin-top:3px">Selamat datang di Sistem Manajemen MaTa PIQ Miftahul Ulum</div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-top" style="background:var(--g400)"></div><div class="stat-ico">📚</div><div class="stat-num" style="color:var(--g700)" id="stat-santri">0</div><div class="stat-lbl">Santri Aktif</div></div>
+          <div class="stat-card"><div class="stat-top" style="background:var(--gold)"></div><div class="stat-ico">📅</div><div class="stat-num" style="color:var(--gold-d)" id="stat-keg">0</div><div class="stat-lbl">Total Kegiatan</div></div>
+          <div class="stat-card"><div class="stat-top" style="background:var(--blue)"></div><div class="stat-ico">✅</div><div class="stat-num" style="color:var(--blue-d)" id="stat-rate">0%</div><div class="stat-lbl">Tingkat Kehadiran</div></div>
+          <div class="stat-card"><div class="stat-top" style="background:var(--red)"></div><div class="stat-ico">🏆</div><div class="stat-num" style="color:var(--red-d)" id="stat-pres">0</div><div class="stat-lbl">Prestasi Tercatat</div></div>
+        </div>
+        <div class="grid2">
+          <div class="card">
+            <div class="card-hd"><div class="card-title">📊 Partisipasi 6 Bulan</div></div>
+            <div class="chart-wrap" id="dash-chart"></div>
+            <div class="sep"></div>
+            <div style="font-size:12px;color:var(--gray);margin-bottom:6px;font-weight:600">Kehadiran Rata-rata</div>
+            <div class="prog-bar"><div class="prog-fill" id="dash-prog" style="width:0%"></div></div>
+            <div style="font-size:12px;font-weight:800;color:var(--g500);margin-top:5px" id="dash-prog-lbl">—</div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><div class="card-title">📅 Kegiatan Mendatang</div></div>
+            <div id="dash-kegiatan-list"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div class="card-title">🏆 Prestasi Terbaru</div></div>
+          <div class="pres-grid" id="dash-prestasi-list"></div>
+        </div>
+      </div>
+
+      <!-- SANTRI -->
+      <div class="page" id="page-santri">
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">📚 Data Santri</div>
+            <div class="flex-row">
+              <input class="fi" style="width:200px" placeholder="🔍 Cari santri..." oninput="filterSantri(this.value)">
+              <button class="btn btn-primary btn-sm" id="btn-add-santri" onclick="openSantriModal()">+ Tambah Santri</button>
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>#</th><th>NIM</th><th>Nama</th><th>TTL</th><th>Wali</th><th>No. HP</th><th>Bergabung</th><th>Status</th><th id="th-santri-aksi">Aksi</th></tr></thead>
+              <tbody id="tbody-santri"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- USTADZ -->
+      <div class="page" id="page-ustadz">
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">👨‍🏫 Ustadz / Ustadzah</div>
+            <button class="btn btn-primary btn-sm" id="btn-add-ustadz" onclick="openUstadzModal()">+ Tambah Pengajar</button>
+          </div>
+          <div class="ust-grid" id="ust-grid"></div>
+        </div>
+      </div>
+
+      <!-- KEGIATAN -->
+      <div class="page" id="page-kegiatan">
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">📅 Agenda Kegiatan</div>
+            <button class="btn btn-primary btn-sm" id="btn-add-keg" onclick="openKegModal()">+ Buat Agenda</button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Nama Kegiatan</th><th>Tanggal</th><th>Waktu</th><th>Lokasi</th><th>Pengajar</th><th>Status</th><th id="th-keg-aksi">Aksi</th></tr></thead>
+              <tbody id="tbody-kegiatan"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABSENSI -->
+      <div class="page" id="page-absensi">
+        <div class="card">
+          <div class="card-hd"><div class="card-title">✅ Pencatatan Absensi</div></div>
+          <div class="fg" style="max-width:460px">
+            <label class="fl">Pilih Kegiatan</label>
+            <select class="fs" id="abs-select" onchange="renderAbsensi()"></select>
+          </div>
+          <div id="abs-detail-banner"></div>
+          <div class="card-title" style="margin:14px 0 8px;font-size:14px">Daftar Kehadiran Santri</div>
+          <div class="att-grid" id="att-grid"></div>
+        </div>
+      </div>
+
+      <!-- PRESTASI -->
+      <div class="page" id="page-prestasi">
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">🏆 Catatan Prestasi Santri</div>
+            <button class="btn btn-primary btn-sm" id="btn-add-pres" onclick="openPresModal()">+ Tambah Prestasi</button>
+          </div>
+          <div class="pres-grid" id="pres-grid"></div>
+        </div>
+      </div>
+
+      <!-- LAPORAN -->
+      <div class="page" id="page-laporan">
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">📊 Laporan Tingkat Partisipasi</div>
+            <button class="btn btn-gold btn-sm" onclick="downloadCSV()">⬇ Unduh CSV</button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Nama Santri</th><th>NIM</th><th>Hadir</th><th>Izin</th><th>Alfa</th><th>% Kehadiran</th><th>Kategori</th></tr></thead>
+              <tbody id="tbody-laporan"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- STRUKTUR -->
+      <div class="page" id="page-struktur">
+        <div class="card" style="padding:0;border:none;box-shadow:none;background:transparent">
+          <div class="struktur-wrap">
+            <div class="str-hd">
+              <div class="str-title">STRUKTUR PENGURUS</div>
+              <div class="str-sub">PENDIDIKAN ILMU AL-QUR'AN</div>
+              <div class="str-org">MIFTAHUL ULUM HIDAYATUL MUHAJIRIN</div>
+            </div>
+            <div class="str-ketua">
+              <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,.55);margin-bottom:10px">👑 KETUA &amp; PENANGGUNG JAWAB</div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+                <div class="av" style="width:46px;height:46px;background:var(--gold);color:#fff;font-size:15px">BM</div>
+                <div style="font-weight:700;font-size:17px">Ust. Bukhari Muslim</div>
+              </div>
+            </div>
+            <div class="str-grid">
+              <div class="str-block">
+                <div class="str-role">🌟 Pembina</div>
+                <div class="person-pill"><div class="av">HB</div>Ust. Habibullah</div>
+              </div>
+              <div class="str-block">
+                <div class="str-role">📋 Sekretaris</div>
+                <div class="person-pill"><div class="av">HB</div>Ust. Habibullah</div>
+              </div>
+              <div class="str-block">
+                <div class="str-role">💰 Bendahara</div>
+                <div class="person-pill"><div class="av">AR</div>Ust. Ach. Ready</div>
+              </div>
+              <div class="str-block">
+                <div class="str-role">📖 Pengajar</div>
+                <div class="person-pill"><div class="av">HB</div>Ust. Habibullah</div>
+                <div class="person-pill"><div class="av">AR</div>Ust. Ach. Ready</div>
+                <div class="person-pill"><div class="av">SR</div>Ust. Siri</div>
+              </div>
+              <div class="str-block" style="grid-column:span 2">
+                <div class="str-role">🕌 Penasehat</div>
+                <div class="person-pill"><div class="av">AS</div>Ust. Abd. Shomad</div>
+                <div class="person-pill"><div class="av">HR</div>Ust. Habiburrahman</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTIFIKASI -->
+      <div class="page" id="page-notifikasi">
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">🔔 Notifikasi <span id="notif-count-title" style="font-size:13px;color:var(--g500);font-family:'Nunito',sans-serif"></span></div>
+            <div class="flex-row">
+              <button class="btn btn-secondary btn-sm" onclick="markAllRead()">Tandai Semua Dibaca</button>
+              <button class="btn btn-primary btn-sm" id="btn-add-notif" onclick="addNotif()">+ Kirim Notifikasi</button>
+            </div>
+          </div>
+          <div id="notif-list"></div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ===== MODALS ===== -->
+
+<!-- Santri Modal -->
+<div class="overlay hidden" id="modal-santri">
+  <div class="modal">
+    <div class="modal-title" id="santri-modal-title">📝 Tambah Data Santri</div>
+    <input type="hidden" id="santri-edit-id">
+    <div class="frow">
+      <div class="fg"><label class="fl">Nama Lengkap *</label><input class="fi" id="s-nama" placeholder="Nama lengkap"></div>
+      <div class="fg"><label class="fl">NIM</label><input class="fi" id="s-nim" placeholder="S001"></div>
+    </div>
+    <div class="fg"><label class="fl">Tempat, Tanggal Lahir</label><input class="fi" id="s-ttl" placeholder="Balikpapan, 1 Jan 2008"></div>
+    <div class="fg"><label class="fl">Alamat Lengkap</label><input class="fi" id="s-alamat" placeholder="Jl. ..."></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Nama Wali</label><input class="fi" id="s-wali"></div>
+      <div class="fg"><label class="fl">No. Telepon</label><input class="fi" id="s-telp" placeholder="0812..."></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Tanggal Bergabung</label><input type="month" class="fi" id="s-bergabung"></div>
+      <div class="fg"><label class="fl">Status</label>
+        <select class="fs" id="s-status"><option value="aktif">Aktif</option><option value="nonaktif">Non-Aktif</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-santri')">Batal</button>
+      <button class="btn btn-primary" onclick="saveSantri()">💾 Simpan Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- Ustadz Modal -->
+<div class="overlay hidden" id="modal-ustadz">
+  <div class="modal">
+    <div class="modal-title" id="ust-modal-title">👨‍🏫 Tambah Pengajar</div>
+    <input type="hidden" id="ust-edit-id">
+    <div class="fg"><label class="fl">Nama Lengkap *</label><input class="fi" id="u-nama"></div>
+    <div class="fg"><label class="fl">Jabatan</label><input class="fi" id="u-jabatan" placeholder="Pengajar / Bendahara..."></div>
+    <div class="fg"><label class="fl">Spesialisasi</label><input class="fi" id="u-spesialis" placeholder="Tajwid, Tahfidz, Fiqih..."></div>
+    <div class="fg"><label class="fl">No. Telepon</label><input class="fi" id="u-telp" placeholder="0812..."></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-ustadz')">Batal</button>
+      <button class="btn btn-primary" onclick="saveUstadz()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Kegiatan Modal -->
+<div class="overlay hidden" id="modal-kegiatan">
+  <div class="modal">
+    <div class="modal-title" id="keg-modal-title">📅 Buat Agenda Kegiatan</div>
+    <input type="hidden" id="keg-edit-id">
+    <div class="fg"><label class="fl">Nama Kegiatan *</label><input class="fi" id="k-nama" placeholder="Kajian Tafsir, Rapat, Bakti Sosial..."></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Tanggal</label><input type="date" class="fi" id="k-tanggal"></div>
+      <div class="fg"><label class="fl">Waktu</label><input type="time" class="fi" id="k-waktu"></div>
+    </div>
+    <div class="fg"><label class="fl">Lokasi</label><input class="fi" id="k-lokasi" placeholder="Musholla, Aula..."></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Pengajar</label>
+        <select class="fs" id="k-pengajar"><option value="">— Pilih Pengajar —</option></select>
+      </div>
+      <div class="fg"><label class="fl">Status</label>
+        <select class="fs" id="k-status">
+          <option value="mendatang">Mendatang</option>
+          <option value="berlangsung">Berlangsung</option>
+          <option value="selesai">Selesai</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-kegiatan')">Batal</button>
+      <button class="btn btn-primary" onclick="saveKegiatan()">💾 Simpan Agenda</button>
+    </div>
+  </div>
+</div>
+
+<!-- Prestasi Modal -->
+<div class="overlay hidden" id="modal-prestasi">
+  <div class="modal">
+    <div class="modal-title" id="pres-modal-title">🏆 Tambah Prestasi Santri</div>
+    <input type="hidden" id="pres-edit-id">
+    <div class="fg"><label class="fl">Santri *</label>
+      <select class="fs" id="p-santri"><option value="">— Pilih Santri —</option></select>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Jenis Prestasi</label>
+        <select class="fs" id="p-jenis"><option>Hafalan</option><option>Akademik</option><option>Tilawah</option><option>Lainnya</option></select>
+      </div>
+      <div class="fg"><label class="fl">Nilai</label>
+        <select class="fs" id="p-nilai"><option>A+</option><option>A</option><option>B</option><option>C</option></select>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Keterangan *</label><input class="fi" id="p-ket" placeholder="Lulus Juz 30, Juara MTQ..."></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">Tanggal</label><input type="date" class="fi" id="p-tanggal"></div>
+      <div class="fg"><label class="fl">Pengajar Penilai</label>
+        <select class="fs" id="p-ustadz"><option value="">— Pilih —</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-prestasi')">Batal</button>
+      <button class="btn btn-primary" onclick="savePrestasi()">💾 Simpan Prestasi</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+// ============================================================
+// DATA STORE
+// ============================================================
+const DB = {
+  users: [
+    {id:1,username:'admin',password:'admin123',role:'admin',name:'Ust. Bukhari Muslim',jabatan:'Ketua'},
+    {id:2,username:'habibullah',password:'pass123',role:'ustadz',name:'Ust. Habibullah',jabatan:'Pengajar'},
+    {id:3,username:'santri1',password:'santri123',role:'santri',name:'Ahmad Fauzi',nim:'S001'},
+  ],
+  santri: [
+    {id:1,nama:'Ahmad Fauzi',nim:'S001',ttl:'Balikpapan, 10 Jan 2008',alamat:'Jl. Markoni No.5',wali:'H. Fauzan',telp:'081234567890',status:'aktif',bergabung:'2023-01'},
+    {id:2,nama:'Muhammad Rizki',nim:'S002',ttl:'Samarinda, 5 Mar 2007',alamat:'Jl. Soekarno Hatta 12',wali:'H. Rizal',telp:'081234567891',status:'aktif',bergabung:'2023-01'},
+    {id:3,nama:'Siti Aminah',nim:'S003',ttl:'Balikpapan, 22 Jul 2009',alamat:'Perum GDM Blok A3',wali:'Hj. Salbiyah',telp:'081234567892',status:'aktif',bergabung:'2023-06'},
+    {id:4,nama:'Fatimah Azzahra',nim:'S004',ttl:'Tenggarong, 1 Nov 2008',alamat:'Jl. Sudirman 45',wali:'H. Aziz',telp:'081234567893',status:'aktif',bergabung:'2023-06'},
+    {id:5,nama:'Abdurrahman Wahid',nim:'S005',ttl:'Balikpapan, 8 Feb 2010',alamat:'Jl. Jenderal 7',wali:'H. Wahid',telp:'081234567894',status:'nonaktif',bergabung:'2022-01'},
+    {id:6,nama:'Khadijah Nur',nim:'S006',ttl:'PPU, 15 Jun 2009',alamat:'Jl. Imam Bonjol 3',wali:'Hj. Nuraini',telp:'081234567895',status:'aktif',bergabung:'2024-01'},
+  ],
+  ustadz: [
+    {id:1,nama:'Ust. Habibullah',jabatan:'Pengajar / Pembina / Sekretaris',spesialisasi:'Tajwid & Tafsir Al-Qur\'an',telp:'081111111111'},
+    {id:2,nama:'Ust. Ach. Ready',jabatan:'Pengajar / Bendahara',spesialisasi:'Fiqih & Hadits',telp:'082222222222'},
+    {id:3,nama:'Ust. Siri',jabatan:'Pengajar',spesialisasi:'Tahfidz Al-Qur\'an',telp:'083333333333'},
+    {id:4,nama:'Ust. Abd. Shomad',jabatan:'Penasehat',spesialisasi:'Tafsir & Aqidah',telp:'084444444444'},
+    {id:5,nama:'Ust. Habiburrahman',jabatan:'Penasehat',spesialisasi:'Ilmu Hadits',telp:'085555555555'},
+    {id:6,nama:'Ust. Bukhari Muslim',jabatan:'Ketua / Penanggung Jawab',spesialisasi:'Manajemen Pendidikan Islam',telp:'086666666666'},
+  ],
+  kegiatan: [
+    {id:1,nama:'Kajian Tafsir Al-Baqarah',tanggal:'2025-06-05',waktu:'08:00',lokasi:'Musholla Miftahul Ulum',pengajar:'Ust. Habibullah',status:'selesai'},
+    {id:2,nama:'Halaqah Tahfidz Juz Amma',tanggal:'2025-06-07',waktu:'07:00',lokasi:'Aula PIQ',pengajar:'Ust. Siri',status:'berlangsung'},
+    {id:3,nama:'Kajian Fiqih Ibadah',tanggal:'2025-06-12',waktu:'09:00',lokasi:'Musholla Miftahul Ulum',pengajar:'Ust. Ach. Ready',status:'mendatang'},
+    {id:4,nama:'Rapat Pengurus Bulanan',tanggal:'2025-06-15',waktu:'19:30',lokasi:'Sekretariat PIQ',pengajar:'Ust. Bukhari Muslim',status:'mendatang'},
+  ],
+  absensi: {
+    1:{1:'hadir',2:'hadir',3:'hadir',4:'hadir',5:'alfa',6:'izin'},
+    2:{1:'hadir',2:'izin',3:'hadir',4:'hadir',5:'alfa',6:'hadir'},
+  },
+  prestasi: [
+    {id:1,santriId:1,santriNama:'Ahmad Fauzi',jenis:'Hafalan',keterangan:'Lulus Juz 30 dengan nilai sempurna',nilai:'A',tanggal:'2025-05-20',ustadz:'Ust. Siri'},
+    {id:2,santriId:3,santriNama:'Siti Aminah',jenis:'Akademik',keterangan:'Juara 1 MTQ Tingkat Kota Balikpapan',nilai:'A+',tanggal:'2025-04-15',ustadz:'Ust. Habibullah'},
+    {id:3,santriId:2,santriNama:'Muhammad Rizki',jenis:'Hafalan',keterangan:'Lulus Juz 29 tanpa kesalahan',nilai:'A',tanggal:'2025-05-28',ustadz:'Ust. Siri'},
+    {id:4,santriId:4,santriNama:'Fatimah Azzahra',jenis:'Tilawah',keterangan:'Tilawah terbaik dalam kelas',nilai:'A',tanggal:'2025-06-01',ustadz:'Ust. Habibullah'},
+  ],
+  notifikasi: [
+    {id:1,pesan:'Kegiatan Kajian Tafsir hari ini jam 08:00 di Musholla',waktu:'1 jam lalu',dibaca:false},
+    {id:2,pesan:'Siti Aminah berhasil meraih Juara 1 MTQ Tingkat Kota',waktu:'2 hari lalu',dibaca:false},
+    {id:3,pesan:'Rapat pengurus bulanan dijadwalkan 15 Juni 2025',waktu:'3 hari lalu',dibaca:true},
+    {id:4,pesan:'Data absensi minggu ini telah berhasil diperbarui',waktu:'1 minggu lalu',dibaca:true},
+    {id:5,pesan:'Pendaftaran santri baru periode Juli 2025 dibuka',waktu:'1 minggu lalu',dibaca:true},
+  ]
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let currentUser = null;
+let currentPage = 'dashboard';
+let isAdmin = false;
+let isUstadz = false;
+let editingId = null;
+
+// ============================================================
+// UTILS
+// ============================================================
+function initials(name){return name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase()}
+function avColor(name){const c=['#2a9060','#1e7048','#c9a227','#1d4ed8','#7c3aed','#dc2626'];return c[name.charCodeAt(0)%c.length]}
+function badgeCls(status){
+  if(status==='aktif'||status==='hadir'||status==='selesai') return 'bg-green';
+  if(status==='nonaktif'||status==='alfa') return 'bg-red';
+  if(status==='berlangsung') return 'bg-gold';
+  if(status==='mendatang') return 'bg-blue';
+  if(status==='izin') return 'bg-gold';
+  return 'bg-gray';
+}
+function nextId(arr){return arr.length>0?Math.max(...arr.map(i=>i.id))+1:1}
+function today(){return new Date().toISOString().slice(0,10)}
+function nowMonth(){return new Date().toISOString().slice(0,7)}
+function confirm2(msg){return window.confirm(msg)}
+function closeModal(id){document.getElementById(id).classList.add('hidden')}
+function openModal(id){document.getElementById(id).classList.remove('hidden')}
+
+// ============================================================
+// AUTH
+// ============================================================
+function doLogin(){
+  const username=document.getElementById('login-user').value.trim();
+  const password=document.getElementById('login-pass').value;
+  const role=document.getElementById('login-role').value;
+  const user=DB.users.find(u=>u.username===username&&u.password===password);
+  const errEl=document.getElementById('login-err');
+  if(!user){errEl.textContent='Username atau password salah.';errEl.classList.remove('hidden');return;}
+  if(user.role==='santri'&&role!=='santri'){errEl.textContent='Anda tidak memiliki akses sebagai Admin/Ustadz.';errEl.classList.remove('hidden');return;}
+  errEl.classList.add('hidden');
+  currentUser=user;
+  isAdmin=user.role==='admin';
+  isUstadz=user.role==='ustadz';
+  startApp();
+}
+document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+document.getElementById('login-user').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+
+function doLogout(){
+  if(!confirm2('Yakin ingin keluar?'))return;
+  currentUser=null;isAdmin=false;isUstadz=false;
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('login-page').classList.remove('hidden');
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+}
+
+function startApp(){
+  document.getElementById('login-page').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  // Set user info
+  const av=initials(currentUser.name);
+  const col=avColor(currentUser.name);
+  ['sb-av','top-av'].forEach(id=>{const el=document.getElementById(id);el.textContent=av;el.style.background=col});
+  document.getElementById('sb-name').textContent=currentUser.name;
+  document.getElementById('sb-role').textContent=currentUser.role;
+  document.getElementById('top-name').textContent=currentUser.name.split(' ').slice(0,2).join(' ');
+  document.getElementById('top-role').textContent=currentUser.role;
+  // Role-based visibility
+  const canWrite=isAdmin||isUstadz;
+  ['btn-add-santri','btn-add-ustadz','btn-add-keg','btn-add-pres','btn-add-notif'].forEach(id=>{
+    const el=document.getElementById(id);if(el){el.style.display=canWrite?'':'none'}
+  });
+  // Santri hanya bisa lihat menu terbatas
+  if(currentUser.role==='santri'){
+    ['nav-santri','nav-ustadz','nav-laporan'].forEach(id=>{
+      const el=document.getElementById(id);if(el)el.style.display='none';
+    });
+  }
+  // Pastikan laporan tampil untuk admin & ustadz
+  if(isAdmin||isUstadz){
+    const el=document.getElementById('nav-laporan');if(el)el.style.display='';
+  }
+  updateNotifBadge();
+  goPage('dashboard');
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+const pageTitles={dashboard:'Dashboard',santri:'Data Santri',ustadz:'Ustadz / Ustadzah',
+  kegiatan:'Agenda Kegiatan',absensi:'Absensi',prestasi:'Prestasi Santri',
+  laporan:'Laporan & Statistik',struktur:'Struktur Pengurus',notifikasi:'Notifikasi'};
+
+function goPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const pg=document.getElementById('page-'+name);
+  if(pg)pg.classList.add('active');
+  document.querySelectorAll(`[data-page="${name}"]`).forEach(n=>n.classList.add('active'));
+  document.getElementById('topbar-title').textContent=pageTitles[name]||name;
+  currentPage=name;
+  renderPage(name);
+}
+
+function renderPage(name){
+  if(name==='dashboard')renderDashboard();
+  else if(name==='santri')renderSantri();
+  else if(name==='ustadz')renderUstadz();
+  else if(name==='kegiatan')renderKegiatan();
+  else if(name==='absensi')renderAbsensiPage();
+  else if(name==='prestasi')renderPrestasi();
+  else if(name==='laporan')renderLaporan();
+  else if(name==='notifikasi')renderNotifikasi();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard(){
+  const aktivSantri=DB.santri.filter(s=>s.status==='aktif').length;
+  document.getElementById('stat-santri').textContent=aktivSantri;
+  document.getElementById('stat-keg').textContent=DB.kegiatan.length;
+  document.getElementById('stat-pres').textContent=DB.prestasi.length;
+  document.getElementById('dash-greeting').firstElementChild.textContent=
+    `Assalamu'alaikum, ${currentUser.name.split(' ').slice(0,2).join(' ')} 👋`;
+
+  // Calc overall rate
+  let h=0,total=0;
+  Object.values(DB.absensi).forEach(abs=>{Object.values(abs).forEach(s=>{if(s==='hadir')h++;total++;})});
+  const rate=total>0?Math.round(h/total*100):0;
+  document.getElementById('stat-rate').textContent=rate+'%';
+  document.getElementById('dash-prog').style.width=rate+'%';
+  document.getElementById('dash-prog-lbl').textContent=rate+'% — '+(rate>=80?'Sangat Baik':rate>=60?'Baik':'Perlu Peningkatan');
+
+  // Bar chart
+  const months=['Jan','Feb','Mar','Apr','Mei','Jun'];
+  const barData=[72,68,85,78,91,87];
+  document.getElementById('dash-chart').innerHTML=months.map((m,i)=>`
+    <div class="bar-col">
+      <div class="bar-pct">${barData[i]}%</div>
+      <div class="bar" style="height:${barData[i]*1.1}px"></div>
+      <div class="bar-lbl">${m}</div>
+    </div>`).join('');
+
+  // Kegiatan mendatang
+  const kl=document.getElementById('dash-kegiatan-list');
+  const upcoming=DB.kegiatan.filter(k=>k.status!=='selesai').slice(0,3);
+  kl.innerHTML=upcoming.map(k=>`
+    <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px">
+      <div style="width:38px;height:38px;border-radius:9px;background:var(--g50);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${k.status==='berlangsung'?'🟢':'📅'}</div>
+      <div>
+        <div style="font-size:13px;font-weight:800;color:var(--g800)">${k.nama}</div>
+        <div style="font-size:11px;color:var(--gray);margin-top:2px">${k.tanggal} · ${k.waktu} · ${k.lokasi}</div>
+        <span class="badge ${badgeCls(k.status)}" style="margin-top:4px">${k.status}</span>
+      </div>
+    </div>`).join('')||'<div class="empty"><div class="empty-ico">📭</div><div>Tidak ada kegiatan mendatang</div></div>';
+
+  // Prestasi terbaru
+  const pl=document.getElementById('dash-prestasi-list');
+  pl.innerHTML=DB.prestasi.slice(0,4).map(p=>`
+    <div class="pres-card">
+      <div class="pres-ico">${{Hafalan:'📖',Akademik:'🎓',Tilawah:'🎵'}[p.jenis]||'⭐'}</div>
+      <div class="pres-val">${p.nilai}</div>
+      <div class="pres-name">${p.santriNama}</div>
+      <div class="pres-desc">${p.keterangan}</div>
+      <div class="divider"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span class="badge bg-green">${p.jenis}</span>
+        <span style="font-size:11px;color:var(--gray)">${p.tanggal}</span>
+      </div>
+    </div>`).join('');
+}
+
+// ============================================================
+// SANTRI
+// ============================================================
+function renderSantri(filter=''){
+  const canWrite=isAdmin||isUstadz;
+  if(!canWrite){document.getElementById('th-santri-aksi').style.display='none'}
+  const list=filter?DB.santri.filter(s=>s.nama.toLowerCase().includes(filter.toLowerCase())||s.nim.includes(filter)):DB.santri;
+  document.getElementById('tbody-santri').innerHTML=list.length?list.map((s,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td><span class="badge bg-gray">${s.nim}</span></td>
+      <td><div class="av-row"><div class="av" style="background:${avColor(s.nama)};color:#fff">${initials(s.nama)}</div>${s.nama}</div></td>
+      <td style="font-size:11.5px;color:var(--gray)">${s.ttl}</td>
+      <td>${s.wali}</td>
+      <td style="font-size:12px">${s.telp}</td>
+      <td style="font-size:12px">${s.bergabung}</td>
+      <td><span class="badge ${badgeCls(s.status)}">${s.status}</span></td>
+      <td>${canWrite?`<div class="flex-row"><button class="btn btn-secondary btn-sm" onclick="openSantriModal(${s.id})">Edit</button><button class="btn btn-danger btn-sm" onclick="delSantri(${s.id})">Hapus</button></div>`:'—'}</td>
+    </tr>`).join(''):'<tr><td colspan="9" style="text-align:center;padding:32px;color:#94a3b8">Tidak ada data santri ditemukan</td></tr>';
+}
+
+function filterSantri(v){renderSantri(v)}
+
+function openSantriModal(id=null){
+  editingId=id;
+  document.getElementById('santri-modal-title').textContent=id?'✏️ Edit Data Santri':'📝 Tambah Data Santri';
+  if(id){
+    const s=DB.santri.find(x=>x.id===id);
+    document.getElementById('s-nama').value=s.nama;document.getElementById('s-nim').value=s.nim;
+    document.getElementById('s-ttl').value=s.ttl;document.getElementById('s-alamat').value=s.alamat;
+    document.getElementById('s-wali').value=s.wali;document.getElementById('s-telp').value=s.telp;
+    document.getElementById('s-bergabung').value=s.bergabung;document.getElementById('s-status').value=s.status;
+  }else{
+    document.getElementById('s-nama').value='';document.getElementById('s-nim').value='S00'+(DB.santri.length+1);
+    document.getElementById('s-ttl').value='';document.getElementById('s-alamat').value='';
+    document.getElementById('s-wali').value='';document.getElementById('s-telp').value='';
+    document.getElementById('s-bergabung').value=nowMonth();document.getElementById('s-status').value='aktif';
+  }
+  openModal('modal-santri');
+}
+
+function saveSantri(){
+  const nama=document.getElementById('s-nama').value.trim();
+  if(!nama){alert('Nama lengkap wajib diisi!');return}
+  const data={nama,nim:document.getElementById('s-nim').value.trim(),ttl:document.getElementById('s-ttl').value.trim(),
+    alamat:document.getElementById('s-alamat').value.trim(),wali:document.getElementById('s-wali').value.trim(),
+    telp:document.getElementById('s-telp').value.trim(),bergabung:document.getElementById('s-bergabung').value,
+    status:document.getElementById('s-status').value};
+  if(editingId){const i=DB.santri.findIndex(s=>s.id===editingId);DB.santri[i]={...data,id:editingId};}
+  else{DB.santri.push({...data,id:nextId(DB.santri)})}
+  closeModal('modal-santri');renderSantri();
+}
+
+function delSantri(id){if(confirm2('Yakin hapus data santri ini?')){DB.santri=DB.santri.filter(s=>s.id!==id);renderSantri()}}
+
+// ============================================================
+// USTADZ
+// ============================================================
+function renderUstadz(){
+  const canWrite=isAdmin;
+  document.getElementById('btn-add-ustadz').style.display=canWrite?'':'none';
+  document.getElementById('ust-grid').innerHTML=DB.ustadz.map(u=>`
+    <div class="ust-card">
+      <div class="av-row">
+        <div class="av" style="width:44px;height:44px;font-size:15px;background:${avColor(u.nama)};color:#fff">${initials(u.nama)}</div>
+        <div><div style="font-weight:800;font-size:14px;color:var(--g800)">${u.nama}</div><div style="font-size:11px;color:var(--gray)">${u.jabatan}</div></div>
+      </div>
+      <div class="ust-spec">📖 ${u.spesialisasi}</div>
+      <div class="ust-telp">📞 ${u.telp}</div>
+      ${canWrite?`<div class="flex-row" style="margin-top:12px"><button class="btn btn-secondary btn-sm" onclick="openUstadzModal(${u.id})">Edit</button><button class="btn btn-danger btn-sm" onclick="delUstadz(${u.id})">Hapus</button></div>`:''}
+    </div>`).join('');
+}
+
+function openUstadzModal(id=null){
+  editingId=id;
+  document.getElementById('ust-modal-title').textContent=id?'✏️ Edit Pengajar':'👨‍🏫 Tambah Pengajar';
+  if(id){const u=DB.ustadz.find(x=>x.id===id);document.getElementById('u-nama').value=u.nama;document.getElementById('u-jabatan').value=u.jabatan;document.getElementById('u-spesialis').value=u.spesialisasi;document.getElementById('u-telp').value=u.telp;}
+  else{document.getElementById('u-nama').value='';document.getElementById('u-jabatan').value='';document.getElementById('u-spesialis').value='';document.getElementById('u-telp').value='';}
+  openModal('modal-ustadz');
+}
+
+function saveUstadz(){
+  const nama=document.getElementById('u-nama').value.trim();
+  if(!nama){alert('Nama wajib diisi!');return}
+  const data={nama,jabatan:document.getElementById('u-jabatan').value.trim(),spesialisasi:document.getElementById('u-spesialis').value.trim(),telp:document.getElementById('u-telp').value.trim()};
+  if(editingId){const i=DB.ustadz.findIndex(u=>u.id===editingId);DB.ustadz[i]={...data,id:editingId};}
+  else DB.ustadz.push({...data,id:nextId(DB.ustadz)});
+  closeModal('modal-ustadz');renderUstadz();refreshUstadzSelects();
+}
+
+function delUstadz(id){if(confirm2('Yakin hapus pengajar ini?')){DB.ustadz=DB.ustadz.filter(u=>u.id!==id);renderUstadz()}}
+
+function refreshUstadzSelects(){
+  const opts=DB.ustadz.map(u=>`<option value="${u.nama}">${u.nama}</option>`).join('');
+  ['k-pengajar','p-ustadz'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<option value="">— Pilih —</option>'+opts});
+}
+
+// ============================================================
+// KEGIATAN
+// ============================================================
+function renderKegiatan(){
+  const canWrite=isAdmin||isUstadz;
+  document.getElementById('th-keg-aksi').style.display=canWrite?'':'none';
+  document.getElementById('btn-add-keg').style.display=canWrite?'':'none';
+  document.getElementById('tbody-kegiatan').innerHTML=DB.kegiatan.length?DB.kegiatan.map(k=>`
+    <tr>
+      <td style="font-weight:700">${k.nama}</td>
+      <td>${k.tanggal}</td><td>${k.waktu}</td>
+      <td style="font-size:12px">${k.lokasi}</td>
+      <td style="font-size:12px">${k.pengajar}</td>
+      <td><span class="badge ${badgeCls(k.status)}">${k.status}</span></td>
+      <td>${canWrite?`<div class="flex-row"><button class="btn btn-secondary btn-sm" onclick="openKegModal(${k.id})">Edit</button><button class="btn btn-danger btn-sm" onclick="delKeg(${k.id})">Hapus</button></div>`:'—'}</td>
+    </tr>`).join(''):'<tr><td colspan="7" style="text-align:center;padding:32px;color:#94a3b8">Belum ada agenda kegiatan</td></tr>';
+}
+
+function openKegModal(id=null){
+  editingId=id;refreshUstadzSelects();
+  document.getElementById('keg-modal-title').textContent=id?'✏️ Edit Agenda':'📅 Buat Agenda Kegiatan';
+  if(id){const k=DB.kegiatan.find(x=>x.id===id);document.getElementById('k-nama').value=k.nama;document.getElementById('k-tanggal').value=k.tanggal;document.getElementById('k-waktu').value=k.waktu;document.getElementById('k-lokasi').value=k.lokasi;document.getElementById('k-pengajar').value=k.pengajar;document.getElementById('k-status').value=k.status;}
+  else{document.getElementById('k-nama').value='';document.getElementById('k-tanggal').value=today();document.getElementById('k-waktu').value='08:00';document.getElementById('k-lokasi').value='';document.getElementById('k-pengajar').value='';document.getElementById('k-status').value='mendatang';}
+  openModal('modal-kegiatan');
+}
+
+function saveKegiatan(){
+  const nama=document.getElementById('k-nama').value.trim();
+  if(!nama){alert('Nama kegiatan wajib diisi!');return}
+  const data={nama,tanggal:document.getElementById('k-tanggal').value,waktu:document.getElementById('k-waktu').value,lokasi:document.getElementById('k-lokasi').value.trim(),pengajar:document.getElementById('k-pengajar').value,status:document.getElementById('k-status').value};
+  if(editingId){const i=DB.kegiatan.findIndex(k=>k.id===editingId);DB.kegiatan[i]={...data,id:editingId};}
+  else DB.kegiatan.push({...data,id:nextId(DB.kegiatan)});
+  closeModal('modal-kegiatan');renderKegiatan();refreshAbsensiSelect();
+}
+
+function delKeg(id){if(confirm2('Yakin hapus kegiatan ini?')){DB.kegiatan=DB.kegiatan.filter(k=>k.id!==id);delete DB.absensi[id];renderKegiatan()}}
+
+// ============================================================
+// ABSENSI
+// ============================================================
+function refreshAbsensiSelect(){
+  const sel=document.getElementById('abs-select');
+  const prev=sel.value;
+  sel.innerHTML=DB.kegiatan.map(k=>`<option value="${k.id}">${k.nama} — ${k.tanggal}</option>`).join('');
+  if(prev)sel.value=prev;
+}
+
+function renderAbsensiPage(){
+  refreshAbsensiSelect();renderAbsensi();
+}
+
+function renderAbsensi(){
+  const kId=parseInt(document.getElementById('abs-select').value);
+  const k=DB.kegiatan.find(x=>x.id===kId);
+  if(!k){document.getElementById('abs-detail-banner').innerHTML='';document.getElementById('att-grid').innerHTML='';return}
+
+  const abs=DB.absensi[kId]||{};
+  let h=0,iz=0,al=0;
+  DB.santri.forEach(s=>{const st=abs[s.id]||'alfa';if(st==='hadir')h++;else if(st==='izin')iz++;else al++;});
+  const tot=DB.santri.length;
+  const rate=Math.round(h/Math.max(tot,1)*100);
+
+  document.getElementById('abs-detail-banner').innerHTML=`
+    <div style="background:linear-gradient(135deg,var(--g900),var(--g600));border-radius:14px;padding:18px;color:#fff;margin-bottom:16px">
+      <div style="font-weight:800;font-size:15px;margin-bottom:6px">📋 ${k.nama}</div>
+      <div style="font-size:12px;opacity:.8">📅 ${k.tanggal} &nbsp;⏰ ${k.waktu} &nbsp;📍 ${k.lokasi} &nbsp;👨‍🏫 ${k.pengajar}</div>
+      <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+        ${[['Hadir',h,'rgba(255,255,255,.15)'],['Izin',iz,'rgba(255,255,255,.15)'],['Alfa',al,'rgba(255,255,255,.15)'],['Kehadiran',rate+'%','rgba(201,162,39,.35)']].map(([l,v,bg])=>`
+        <div style="background:${bg};border-radius:9px;padding:8px 16px;text-align:center">
+          <div style="font-size:20px;font-weight:800">${v}</div><div style="font-size:10px;opacity:.75">${l}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+
+  const canWrite=isAdmin||isUstadz;
+  document.getElementById('att-grid').innerHTML=DB.santri.map(s=>{
+    const status=abs[s.id]||'alfa';
+    return `<div class="att-chip">
+      <div class="av-row">
+        <div class="av" style="width:30px;height:30px;font-size:10px;background:${avColor(s.nama)};color:#fff">${initials(s.nama)}</div>
+        <div><div style="font-size:12px;font-weight:800;color:var(--g800)">${s.nama}</div><div style="font-size:10px;color:var(--gray)">${s.nim}</div></div>
+      </div>
+      ${canWrite?`<div class="att-btns">
+        <button class="att-btn att-h ${status==='hadir'?'on':''}" onclick="setAbsensi(${kId},${s.id},'hadir')">H</button>
+        <button class="att-btn att-i ${status==='izin'?'on':''}" onclick="setAbsensi(${kId},${s.id},'izin')">I</button>
+        <button class="att-btn att-a ${status==='alfa'?'on':''}" onclick="setAbsensi(${kId},${s.id},'alfa')">A</button>
+      </div>`:`<span class="badge ${badgeCls(status)}">${status}</span>`}
+    </div>`;
+  }).join('');
+}
+
+function setAbsensi(kId,santriId,status){
+  if(!DB.absensi[kId])DB.absensi[kId]={};
+  DB.absensi[kId][santriId]=status;
+  renderAbsensi();
+}
+
+// ============================================================
+// PRESTASI
+// ============================================================
+function renderPrestasi(){
+  const canWrite=isAdmin||isUstadz;
+  const ico={Hafalan:'📖',Akademik:'🎓',Tilawah:'🎵',Lainnya:'⭐'};
+  document.getElementById('pres-grid').innerHTML=DB.prestasi.length?DB.prestasi.map(p=>`
+    <div class="pres-card">
+      <div class="pres-ico">${ico[p.jenis]||'⭐'}</div>
+      <div class="pres-val">${p.nilai}</div>
+      <div class="pres-name">${p.santriNama}</div>
+      <div class="pres-desc">${p.keterangan}</div>
+      <div class="divider"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span class="badge bg-green">${p.jenis}</span>
+        <span style="font-size:11px;color:var(--gray)">${p.tanggal}</span>
+      </div>
+      <div style="font-size:11px;color:var(--gray)">Dinilai: ${p.ustadz}</div>
+      ${canWrite?`<div class="flex-row" style="margin-top:10px"><button class="btn btn-secondary btn-sm" onclick="openPresModal(${p.id})">Edit</button><button class="btn btn-danger btn-sm" onclick="delPres(${p.id})">Hapus</button></div>`:''}
+    </div>`).join(''):'<div class="empty"><div class="empty-ico">🏆</div><div>Belum ada prestasi tercatat</div></div>';
+}
+
+function openPresModal(id=null){
+  editingId=id;refreshUstadzSelects();
+  // Refresh santri select
+  const ps=document.getElementById('p-santri');
+  ps.innerHTML='<option value="">— Pilih Santri —</option>'+DB.santri.map(s=>`<option value="${s.id}">${s.nama}</option>`).join('');
+  document.getElementById('pres-modal-title').textContent=id?'✏️ Edit Prestasi':'🏆 Tambah Prestasi Santri';
+  if(id){
+    const p=DB.prestasi.find(x=>x.id===id);
+    ps.value=p.santriId;document.getElementById('p-jenis').value=p.jenis;
+    document.getElementById('p-nilai').value=p.nilai;document.getElementById('p-ket').value=p.keterangan;
+    document.getElementById('p-tanggal').value=p.tanggal;document.getElementById('p-ustadz').value=p.ustadz;
+  }else{
+    ps.value='';document.getElementById('p-jenis').value='Hafalan';document.getElementById('p-nilai').value='A';
+    document.getElementById('p-ket').value='';document.getElementById('p-tanggal').value=today();document.getElementById('p-ustadz').value='';
+  }
+  openModal('modal-prestasi');
+}
+
+function savePrestasi(){
+  const santriId=parseInt(document.getElementById('p-santri').value);
+  const ket=document.getElementById('p-ket').value.trim();
+  if(!santriId||!ket){alert('Santri dan keterangan wajib diisi!');return}
+  const s=DB.santri.find(x=>x.id===santriId);
+  const data={santriId,santriNama:s.nama,jenis:document.getElementById('p-jenis').value,
+    nilai:document.getElementById('p-nilai').value,keterangan:ket,
+    tanggal:document.getElementById('p-tanggal').value,ustadz:document.getElementById('p-ustadz').value};
+  if(editingId){const i=DB.prestasi.findIndex(p=>p.id===editingId);DB.prestasi[i]={...data,id:editingId};}
+  else DB.prestasi.push({...data,id:nextId(DB.prestasi)});
+  closeModal('modal-prestasi');renderPrestasi();
+}
+
+function delPres(id){if(confirm2('Yakin hapus prestasi ini?')){DB.prestasi=DB.prestasi.filter(p=>p.id!==id);renderPrestasi()}}
+
+// ============================================================
+// LAPORAN
+// ============================================================
+function renderLaporan(){
+  const aktivSantri=DB.santri.filter(s=>s.status==='aktif');
+  const allAbs=Object.entries(DB.absensi);
+  const perSantri={};
+  aktivSantri.forEach(s=>{perSantri[s.id]={hadir:0,izin:0,alfa:0,total:allAbs.length}});
+  allAbs.forEach(([,abs])=>{Object.entries(abs).forEach(([sid,st])=>{const ps=perSantri[parseInt(sid)];if(ps)ps[st]++})});
+
+  document.getElementById('tbody-laporan').innerHTML=aktivSantri.map(s=>{
+    const ps=perSantri[s.id]||{hadir:0,izin:0,alfa:0,total:1};
+    const rate=Math.round(ps.hadir/Math.max(ps.total,1)*100);
+    const kat=rate>=80?'Sangat Aktif':rate>=60?'Aktif':rate>=40?'Cukup':'Kurang';
+    const katCls=rate>=80?'bg-green':rate>=60?'bg-blue':rate>=40?'bg-gold':'bg-red';
+    return `<tr>
+      <td><div class="av-row"><div class="av" style="width:28px;height:28px;font-size:10px;background:${avColor(s.nama)};color:#fff">${initials(s.nama)}</div>${s.nama}</div></td>
+      <td><span class="badge bg-gray">${s.nim}</span></td>
+      <td style="color:#15803d;font-weight:800">${ps.hadir}</td>
+      <td style="color:#b45309;font-weight:800">${ps.izin}</td>
+      <td style="color:var(--red-d);font-weight:800">${ps.alfa}</td>
+      <td><div class="lap-rate-bar"><div class="prog-bar" style="width:90px"><div class="prog-fill" style="width:${rate}%"></div></div><span style="font-size:12px;font-weight:800;min-width:36px">${rate}%</span></div></td>
+      <td><span class="badge ${katCls}">${kat}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function downloadCSV(){
+  const aktivSantri=DB.santri.filter(s=>s.status==='aktif');
+  const allAbs=Object.entries(DB.absensi);
+  const perSantri={};
+  aktivSantri.forEach(s=>{perSantri[s.id]={hadir:0,izin:0,alfa:0,total:allAbs.length}});
+  allAbs.forEach(([,abs])=>{Object.entries(abs).forEach(([sid,st])=>{const ps=perSantri[parseInt(sid)];if(ps)ps[st]++})});
+  const rows=[['Nama Santri','NIM','Hadir','Izin','Alfa','% Kehadiran','Kategori']];
+  aktivSantri.forEach(s=>{
+    const ps=perSantri[s.id]||{hadir:0,izin:0,alfa:0,total:1};
+    const rate=Math.round(ps.hadir/Math.max(ps.total,1)*100);
+    const kat=rate>=80?'Sangat Aktif':rate>=60?'Aktif':rate>=40?'Cukup':'Kurang';
+    rows.push([s.nama,s.nim,ps.hadir,ps.izin,ps.alfa,rate+'%',kat]);
+  });
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='laporan_partisipasi_PIQ_Miftahul_Ulum.csv';a.click();
+}
+
+// ============================================================
+// NOTIFIKASI
+// ============================================================
+function updateNotifBadge(){
+  const unread=DB.notifikasi.filter(n=>!n.dibaca).length;
+  const nb=document.getElementById('notif-nav-badge');
+  const nd=document.getElementById('notif-dot');
+  if(unread>0){nb.textContent=unread;nb.classList.remove('hidden');nd.classList.remove('hidden');}
+  else{nb.classList.add('hidden');nd.classList.add('hidden');}
+}
+
+function renderNotifikasi(){
+  const unread=DB.notifikasi.filter(n=>!n.dibaca).length;
+  document.getElementById('notif-count-title').textContent=unread>0?`(${unread} belum dibaca)`:'(semua dibaca)';
+  document.getElementById('notif-list').innerHTML=DB.notifikasi.map(n=>`
+    <div class="notif-item" style="opacity:${n.dibaca?.65:1}">
+      <div class="notif-indicator" style="background:${n.dibaca?'#94a3b8':'var(--g500)'}"></div>
+      <div style="flex:1">
+        <div class="notif-msg" style="font-weight:${n.dibaca?600:800}">${n.pesan}</div>
+        <div class="notif-time">🕐 ${n.waktu}</div>
+      </div>
+      ${!n.dibaca?`<span class="badge bg-green" style="align-self:flex-start">Baru</span>`:''}
+    </div>`).join('');
+  updateNotifBadge();
+}
+
+function markAllRead(){
+  DB.notifikasi.forEach(n=>n.dibaca=true);renderNotifikasi();
+}
+
+function addNotif(){
+  const msg=window.prompt('Isi pesan notifikasi:');
+  if(msg&&msg.trim()){
+    DB.notifikasi.unshift({id:nextId(DB.notifikasi),pesan:msg.trim(),waktu:'Baru saja',dibaca:false});
+    renderNotifikasi();
+  }
+}
+
+// ============================================================
+// GLOBAL SEARCH
+// ============================================================
+function globalSearch(v){
+  if(currentPage==='santri')filterSantri(v);
+}
+
+// ============================================================
+// MODAL CLOSE ON OVERLAY CLICK
+// ============================================================
+document.querySelectorAll('.overlay').forEach(overlay=>{
+  overlay.addEventListener('click',function(e){if(e.target===this)this.classList.add('hidden')});
+});
+
+// ============================================================
+// INIT
+// ============================================================
+refreshUstadzSelects();
+</script>
+</body>
+</html>
